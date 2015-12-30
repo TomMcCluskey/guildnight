@@ -7,8 +7,20 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var config = require('./config.js');
 
 var app = express();
+
+// database setup
+var knex = require('knex')({
+  client: 'pg',
+    connection: {
+      host: config.db_host,
+      user: config.db_user,
+      password: config.db_pass,
+      database: config.db_name 
+    }
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
