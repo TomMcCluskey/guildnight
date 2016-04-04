@@ -1,2 +1,38 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
+<form action="/users/login" method="post" name="login">
+  <fieldset>
+    <legend>Log In</legend>
+    <p class="field">
+      <label for="log_name">User Name: </label>
+      <input type="text" id="log_name" name="username" placeholder="User Name">
+    </p>
+    <p class="field">
+      <label for="log_pass">Password: </label>
+      <input type="password" id="log_pass" name="password" placeholder="password">
+    </p>
+    <p class="button">
+      <input type="submit">
+    </p>
+  </fieldset>
+</form>
+<form action="/users/register" method="post" name="register">
+  <fieldset>
+    <legend>Register</legend>
+    <p class="field">
+      <label for="reg_name">User Name: </label>
+      <input type="text" id="reg_name" name="username" placeholder="User Name">
+    </p>
+    <p class="field">
+      <label for="reg_pass">Password: </label>
+      <input type="password" id="log_pass" name="password" placeholder="password">
+    </p>
+    <p class="field">
+      <label for="reg_pass">Password: </label>
+      <input type="password" id="ver_pass" name="verification" placeholder="verify password">
+    </p>
+    <p class="button">
+      <input type="submit">
+    </p>
+  </fieldset>
+</form>
