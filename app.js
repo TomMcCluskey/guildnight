@@ -64,47 +64,5 @@ app.use(function(err, req, res, next) {
 });
 
 console.log('setting up DB');
-// database setup
-var knex = require('knex')({
-  client: 'pg',
-    connection: {
-      host: config.db_host,
-      user: config.db_user,
-      password: config.db_pass,
-      database: config.db_name 
-    }
-});
-
-database.schema.createTableIfNotExists('accounts', function(table) {
-  table.increments('id');
-  table.string('name');
-  table.string('email');
-  table.string('hash');
-  table.string('salt');
-  table.string('api_key');
-});
-
-database.schema.createTableIfNotExists('achieves', function(table) {
-  table.increments('id');
-  table.string('name');
-  table.integer('ap');
-  table.string('reward');
-  table.boolean('wanted');
-});
-
-database.schema.createTableIfNotExists('guilds', function(table) {
-  table.increments('id');
-  table.string('name');
-});
-
-database.schema.createTableIfNotExists('account_achieves', function(table) {
-  table.integer('account_id');
-  table.integer('achieve_id');
-});
-
-database.schema.createTableIfNotExists('account_guilds', function(table) {
-  table.integer('account_id');
-  table.integer('guild_id');
-});
 
 module.exports = app;
