@@ -11,7 +11,6 @@ var users = require('./routes/users');
 var config = require('./config.js');
 
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
 
@@ -42,35 +41,10 @@ app.use(session({
 app.use('/', routes);
 app.use('/users', users);
 
-var User = require('./models/user.js');
-
-passport.serializeUser(function(user, done) {
-  console.log('serializing user');
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  console.log('deserializing user');
-  User.findOne(id).success(function(user) { done(null, user); });
-});
-
-// authetication setup
-passport.use(new LocalStrategy({
-    usernameField: 'username'
-  },
-  function(username, password, done) {
-
-    User.findOne({ where: { username : username } }).then(function (user) {
-      if (!user) {
-        return done(null, false, { message: 'Incorrect email address.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
+// pass the existing passport and database objects to
+// all the passport setting code. Done to keep app.js
+// cleaner.
+require('./settings/passport')(passport, database);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
