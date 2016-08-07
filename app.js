@@ -4,16 +4,20 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var config = require('./config.js');
 
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+
 var app = express();
 
 // database setup
-var knexConfig = require('./db/knexfile.js');
-var knex = require('knex')(knexConfig);
+var knexSettings = require('./settings/knexfile.js');
+var knex = require('knex')(knexSettings);
 app.set('database', knex);
 var database = app.get('database');
 
@@ -29,8 +33,44 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+  secret: config.cookie_secret,
+  resave: false,
+  saveUninitialized: true
+}));
+
 app.use('/', routes);
 app.use('/users', users);
+
+var User = require('./models/user.js');
+
+passport.serializeUser(function(user, done) {
+  console.log('serializing user');
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  console.log('deserializing user');
+  User.findOne(id).success(function(user) { done(null, user); });
+});
+
+// authetication setup
+passport.use(new LocalStrategy({
+    usernameField: 'username'
+  },
+  function(username, password, done) {
+
+    User.findOne({ where: { username : username } }).then(function (user) {
+      if (!user) {
+        return done(null, false, { message: 'Incorrect email address.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
